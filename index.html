@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Inquisitor Datapad (Homework)</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ws: {
+                            bg: '#020617',
+                            panel: 'rgba(15, 23, 42, 0.95)',
+                            ultraBlue: '#0284c7',
+                            emperorGold: '#fbbf24',
+                            bloodRed: '#dc2626',
+                            plasma: '#38bdf8'
+                        }
+                    },
+                    fontFamily: {
+                        epic: ['Oswald', 'sans-serif'],
+                        ui: ['Rajdhani', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #020617;
+            color: #f8fafc;
+            font-family: 'Rajdhani', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at top, rgba(2, 132, 199, 0.1) 0%, transparent 50%),
+                url("https://www.transparenttextures.com/patterns/carbon-fibre.png");
+        }
+
+        /* Mobile Container Simulation */
+        #mobile-container {
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            max-height: 850px;
+            background-color: #0f172a;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 50px rgba(2, 132, 199, 0.2);
+            border: 2px solid #0284c7;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 400px) {
+            #mobile-container { border: none; box-shadow: none; height: 100vh; max-height: none; border-radius: 0; }
+        }
+
+        .btn-option {
+            background: linear-gradient(to right, rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 0.9)); 
+            border: 2px solid #334155;
+            color: #f8fafc;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 1.25rem 1rem;
+            border-radius: 4px;
+            width: 100%;
+            text-align: center;
+            transition: all 0.2s;
+            position: relative;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+            letter-spacing: 0.1em;
+        }
+        .btn-option:active { transform: translateY(2px); box-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+        .btn-option.correct { background: linear-gradient(to right, #0ea5e9, #0284c7); border-color: #38bdf8; color: #fff; box-shadow: 0 0 15px rgba(2, 132, 199, 0.5); }
+        .btn-option.wrong { background: linear-gradient(to right, #be123c, #9f1239); border-color: #ef4444; color: #fff; box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
+        .btn-option.disabled { pointer-events: none; opacity: 0.7; }
+
+        .fade-in { animation: fadeIn 0.3s ease-in forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        /* Praise Toast */
+        .praise-toast {
+            position: absolute; top: 15%; left: 50%; transform: translate(-50%, 0);
+            background: #fbbf24; color: #000; border: 2px solid #fbbf24;
+            font-family: 'Oswald', sans-serif; font-weight: bold;
+            padding: 0.5rem 1rem; text-transform: uppercase; letter-spacing: 0.1em;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.6);
+            opacity: 0; pointer-events: none; z-index: 101; text-align: center;
+            border-radius: 4px;
+        }
+        .toast-anim { animation: toastUp 1.5s ease-out forwards; }
+        @keyframes toastUp {
+            0% { transform: translate(-50%, 20px) scale(0.8); opacity: 0; }
+            20% { transform: translate(-50%, 0) scale(1.1); opacity: 1; }
+            80% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -20px) scale(0.8); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="mobile-container">
+        
+        <!-- HEADER -->
+        <header class="bg-black/90 backdrop-blur-md border-b-2 border-ws-emperorGold p-4 flex justify-between items-center z-10 shrink-0 shadow-lg">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl drop-shadow-[0_0_5px_#fbbf24]">🛡️</span>
+                <div class="flex flex-col">
+                    <span class="text-[9px] text-gray-400 font-epic tracking-widest uppercase font-bold">Inquisitor Datapad</span>
+                    <span class="text-white font-ui text-xs font-bold tracking-widest uppercase drop-shadow-md">Combat Test</span>
+                </div>
+            </div>
+            <span class="text-ws-emperorGold font-epic font-bold text-[10px] border border-ws-emperorGold px-2 py-0.5 rounded bg-ws-emperorGold/10">LVL: A1</span>
+        </header>
+
+        <!-- START SCREEN -->
+        <div id="start-screen" class="flex-1 flex flex-col items-center justify-center p-6 text-center z-10 bg-gradient-to-b from-slate-900 to-black">
+            <img src="https://assetsio.gnwcdn.com/co5vab.jpg?width=2048&height=2048&fit=bounds&quality=85&format=jpg&auto=webp" alt="Space Marine" class="w-full max-w-[200px] object-cover drop-shadow-[0_0_15px_rgba(251,191,36,0.5)] mb-8 border-2 border-ws-emperorGold rounded">
+            <h1 class="text-3xl font-epic font-bold text-white uppercase tracking-widest mb-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">Prepare for Battle</h1>
+            <p class="text-gray-400 font-ui font-bold text-sm mb-10">Pass the 15 questions about There is / There are to win.</p>
+            <button onclick="startQuiz()" class="w-full bg-ws-emperorGold text-black font-epic font-bold text-lg py-4 uppercase tracking-widest transition-transform hover:scale-105 shadow-[0_0_20px_rgba(251,191,36,0.4)] rounded border-none">Start Mission</button>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quiz-screen" class="hidden flex-1 flex flex-col p-6 z-10 overflow-y-auto">
+            <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-2">
+                <span class="font-epic text-xs text-gray-500 uppercase tracking-widest font-bold">Question <span id="q-num" class="text-ws-emperorGold">1</span>/15</span>
+                <span class="font-epic text-xs text-gray-500 uppercase tracking-widest font-bold">Honor: <span id="score-text" class="text-ws-ultraBlue">0</span></span>
+            </div>
+
+            <div id="question-container" class="flex-1 flex flex-col fade-in justify-center mb-8">
+                <p class="text-[10px] text-ws-plasma uppercase tracking-widest mb-3 font-bold font-epic text-center border border-ws-plasma/30 rounded py-1 bg-black/50">Complete the sentence</p>
+                <p id="q-text" class="text-2xl font-bold text-white mb-8 leading-relaxed font-ui text-center"></p>
+                
+                <div id="options-container" class="flex flex-col gap-3">
+                    <!-- Options injected via JS -->
+                </div>
+            </div>
+
+            <button id="next-btn" onclick="nextQuestion()" class="hidden w-full mt-auto bg-black text-white border-2 border-ws-emperorGold font-epic font-bold text-base py-4 uppercase tracking-widest shadow-[0_0_15px_rgba(251,191,36,0.4)] rounded hover:bg-ws-emperorGold hover:text-black transition-colors">Next Stage ▸</button>
+        </div>
+
+        <!-- END SCREEN -->
+        <div id="end-screen" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center z-10 bg-black">
+            <span class="text-7xl mb-6 drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]">🎖️</span>
+            <h1 class="text-3xl font-epic font-bold text-white uppercase tracking-widest mb-2 text-ws-emperorGold">Victory</h1>
+            <p class="text-gray-400 font-ui text-sm font-bold mb-6">Final Honor Score:</p>
+            <div class="text-5xl font-epic font-bold text-white mb-10 border-2 border-ws-emperorGold bg-yellow-900/20 p-6 shadow-[0_0_30px_rgba(251,191,36,0.3)] rounded">
+                <span id="final-score">0</span><span class="text-2xl text-gray-500">/15</span>
+            </div>
+            <button onclick="location.reload()" class="w-full bg-slate-900 border border-gray-600 text-gray-400 font-epic font-bold text-sm py-4 uppercase tracking-widest hover:border-white hover:text-white transition-colors rounded">Return to Ship</button>
+        </div>
+
+        <!-- PRAISE TOAST -->
+        <div id="praise-toast" class="praise-toast">GOOD SHOT</div>
+
+        <!-- BOTTOM PROGRESS BAR -->
+        <div class="h-2 w-full bg-gray-900 shrink-0 border-t border-gray-800">
+            <div id="progress-bar" class="h-full bg-ws-plasma w-0 transition-all duration-300 shadow-[0_0_10px_#38bdf8]"></div>
+        </div>
+
+    </div>
+
+    <script>
+        const questions = [
+            { q: "There ________ a great victory.", options: ["are", "is"], answer: 1 },
+            { q: "There ________ many brothers here.", options: ["are", "is"], answer: 0 },
+            { q: "________ there aliens on the planet?", options: ["Are", "Is"], answer: 0 },
+            { q: "There ________ no ground to run.", options: ["are", "is"], answer: 1 },
+            { q: "Look! There ________ a weapon.", options: ["is", "are"], answer: 0 },
+            { q: "There are ________ guns here.", options: ["many", "one"], answer: 0 },
+            { q: "________ there a Space Marine?", options: ["Is", "Are"], answer: 0 },
+            { q: "I see the enemy. There ________ two aliens.", options: ["are", "is"], answer: 0 },
+            { q: "There ________ not many soldiers.", options: ["is", "are"], answer: 1 },
+            { q: "We must fight! There is ________.", options: ["death", "aliens"], answer: 0 },
+            { q: "Help! There ________ an alien behind you.", options: ["is", "are"], answer: 0 },
+            { q: "We must fight. There ________ many enemies.", options: ["are", "is"], answer: 0 },
+            { q: "Is there a weapon? Yes, there ________.", options: ["is", "are"], answer: 0 },
+            { q: "There ________ a Space Marine.", options: ["are", "is"], answer: 1 },
+            { q: "There are many ________.", options: ["brother", "brothers"], answer: 1 }
+        ];
+
+        let currentQ = 0;
+        let score = 0;
+
+        const praises = ["GOOD SHOT", "HONOR +", "TARGET HIT", "NICE"];
+
+        function startQuiz() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            document.getElementById('quiz-screen').classList.add('flex');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const qData = questions[currentQ];
+            document.getElementById('q-num').innerText = currentQ + 1;
+            document.getElementById('q-text').innerHTML = '"' + qData.q + '"';
+            
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            
+            qData.options.forEach(function(opt, index) {
+                const btn = document.createElement('button');
+                btn.className = 'btn-option';
+                btn.innerText = opt;
+                btn.onclick = function() { checkAnswer(btn, index); };
+                container.appendChild(btn);
+            });
+
+            document.getElementById('next-btn').classList.add('hidden');
+            
+            const qContainer = document.getElementById('question-container');
+            qContainer.classList.remove('fade-in');
+            void qContainer.offsetWidth;
+            qContainer.classList.add('fade-in');
+
+            updateProgress();
+        }
+
+        function checkAnswer(btn, selectedIndex) {
+            const qData = questions[currentQ];
+            const allBtns = document.querySelectorAll('.btn-option');
+            
+            allBtns.forEach(function(b) { b.classList.add('disabled'); });
+
+            if (selectedIndex === qData.answer) {
+                btn.classList.add('correct');
+                score++;
+                document.getElementById('score-text').innerText = score * 10; 
+                showPraise();
+            } else {
+                btn.classList.add('wrong');
+                allBtns[qData.answer].classList.add('correct'); 
+            }
+
+            const blankedText = qData.q.replace('________', '<span class="' + (selectedIndex === qData.answer ? 'text-ws-plasma' : 'text-ws-bloodRed') + ' underline underline-offset-4">' + qData.options[qData.answer] + '</span>');
+            document.getElementById('q-text').innerHTML = '"' + blankedText + '"';
+
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQ++;
+            if (currentQ < questions.length) {
+                loadQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function endQuiz() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('flex');
+            document.getElementById('end-screen').classList.remove('hidden');
+            document.getElementById('end-screen').classList.add('flex');
+            
+            const finalScoreEl = document.getElementById('final-score');
+            finalScoreEl.innerText = score;
+            if(score < 8) finalScoreEl.classList.add('text-ws-bloodRed');
+
+            document.getElementById('progress-bar').style.width = '100%';
+        }
+
+        function updateProgress() {
+            const progress = (currentQ / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+        }
+
+        function showPraise() {
+            const toast = document.getElementById('praise-toast');
+            toast.innerText = praises[Math.floor(Math.random() * praises.length)];
+            toast.classList.remove('toast-anim');
+            void toast.offsetWidth;
+            toast.classList.add('toast-anim');
+        }
+    </script>
+</body>
+</html>
